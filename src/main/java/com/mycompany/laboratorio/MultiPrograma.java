@@ -13,17 +13,22 @@ public class MultiPrograma {
         String porta = args[2];
         System.out.println("Olá, eu sou o programa do tipo " + tipo + " com o identificador " + nome);
         
-        if (tipo.equals("produtor")){
-            Produtor produtor = new Produtor(Integer.valueOf(porta), nome);
-            produtor.run();
-        }else if(tipo.equals("consumidor")){
-            Consumidor consumidor = new Consumidor(Integer.valueOf(porta), nome);
-            consumidor.run();      
-        }else if(tipo.equals("servidor")){
-            Servidor servidor = new Servidor(Integer.valueOf(porta), nome);
-            servidor.run();
-        } else {
-            System.out.println("Tipo não válido!");
+        switch (tipo) {
+            case "produtor":
+                Produtor produtor = new Produtor(porta, nome);
+                produtor.run();
+                break;
+            case "consumidor":
+                Consumidor consumidor = new Consumidor(porta, nome);
+                consumidor.run();
+                break;
+            case "servidor":
+                Servidor servidor = new Servidor(porta, nome);
+                servidor.run();
+                break;
+            default:
+                System.out.println("Tipo não válido!");
+                break;
         }
     }
 }

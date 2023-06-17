@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  * @author 1271919682
  */
 public class Produtor extends Tipo {
-    public Produtor(Integer porta, String nome){
+    public Produtor(String porta, String nome){
         super(porta, nome);
     }
     

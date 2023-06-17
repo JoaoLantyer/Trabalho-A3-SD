@@ -64,6 +64,10 @@ public class Processos {
         this.totalProcesso = totalProcesso;
     }
     
+        public Processo getProcessoByIdentificador(Integer identificador) {
+        return processos.get(identificador);
+    }
+    
     public Processo getRandomProcesso(){
         Random rand = new Random();
         int index = rand.nextInt(processos.size());

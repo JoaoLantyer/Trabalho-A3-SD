@@ -12,14 +12,13 @@ import java.util.logging.Logger;
 
 
 public abstract class Tipo {
-    protected Integer porta;
-    protected Integer nome;
     
-    protected Processo me;
-    
+    protected String porta;
+    protected Integer nome; 
+    protected Processo me;   
     protected ServidorSocket serverSocket;
     
-    public Tipo(Integer porta, String nome){
+    public Tipo(String porta, String nome){
         this.porta = porta;
         this.nome = Integer.valueOf(nome);
         
@@ -41,7 +40,7 @@ public abstract class Tipo {
         Map<Integer, Processo> processos = new HashMap<>();
         for(int i = 1; i <= totalProcesso; i++){
             Integer identificador = Integer.valueOf(prop.getProperty("app.processo." + i + ".identificador"));
-            String host = prop.getProperty("app.processo" + i + ".host");
+            String host = prop.getProperty("app.processo." + i + ".host");
             Integer port = Integer.valueOf(prop.getProperty("app.processo." + i + ".port"));
             Processo processo = new Processo(identificador, host, port);
             if (identificador.equals(this.nome)){
@@ -62,7 +61,7 @@ public abstract class Tipo {
     
     protected void iniciarConexao(){
         try {
-            serverSocket = new ServidorSocket(me.getIdentificador(), this.porta);
+            serverSocket = new ServidorSocket(Integer.valueOf(this.porta), me.getIdentificador(), me);
             Thread thread = new Thread(serverSocket);
             thread.start();
         } catch (IOException e) {
@@ -79,7 +78,7 @@ public abstract class Tipo {
             System.out.println("Resposta: " + resposta);
         } catch (IOException ex){
             Eleicao.getInstance().callEleicao();
-            Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processoLider.getIdentificador() + ": " + ex.getMessage());
+            Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com {0}: {1}", new Object[]{processoLider.getIdentificador(), ex.getMessage()});
         }
     }
 }

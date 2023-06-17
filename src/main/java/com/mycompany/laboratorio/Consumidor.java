@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Consumidor extends Tipo {
-    public Consumidor(Integer porta, String nome){
+    public Consumidor(String porta, String nome){
         super(porta, nome);
     }
     
