@@ -1,4 +1,12 @@
+com\mycompany\laboratorio\Database.class
+com\mycompany\laboratorio\Processo.class
+com\mycompany\laboratorio\ServidorSocket.class
+com\mycompany\laboratorio\ClienteSocket.class
+com\mycompany\laboratorio\ClienteHandler.class
 com\mycompany\laboratorio\MultiPrograma.class
-com\mycompany\laboratorio\Produtor.class
-com\mycompany\laboratorio\Consumidor.class
+com\mycompany\laboratorio\Servidor.class
+com\mycompany\laboratorio\Eleicao.class
+com\mycompany\laboratorio\Processos.class
+com\mycompany\laboratorio\Vendedor.class
+com\mycompany\laboratorio\Gerente.class
 com\mycompany\laboratorio\Tipo.class
