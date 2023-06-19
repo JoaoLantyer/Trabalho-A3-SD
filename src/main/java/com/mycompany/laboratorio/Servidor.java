@@ -1,7 +1,6 @@
 package com.mycompany.laboratorio;
 
 import java.io.IOException;
-import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +12,6 @@ public class Servidor extends Tipo {
 
     @Override
     public void run(){
-        boolean vendaRealizada = false;
         while(true){
             if(!Eleicao.getInstance().isEleicaoIniciada()){
                 Processo processo = Processos.getInstance().getRandomProcesso();

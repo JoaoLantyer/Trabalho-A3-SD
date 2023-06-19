@@ -41,6 +41,10 @@ public class Vendedor extends Tipo {
 
                         socket.enviar("05|" + quantidade + "|" + nomeProduto + "|" + nomeVendedor + "|" + dataVenda);
 
+                        String resposta = socket.receber();
+                        if(resposta.equals("OK") || resposta.equals("ERRO")) {
+                            System.out.println("Resposta do servidor: " + resposta);
+                        }
 
                         Thread.sleep(1000*5);
                     } catch (IOException ex) {
