@@ -10,11 +10,11 @@ public class Gerente extends Tipo {
         super(porta, nome);
     }
     
+    @Override
     public void run(){
-        this.iniciarConexao();
         while(true){
            try{
-            Thread.sleep(1000);
+            Thread.sleep(1000 * 3);
                 if(!Eleicao.getInstance().isEleicaoIniciada()){
                     Processo processo = Processos.getInstance().getRandomProcesso();
                     if(!processo.isLider()){

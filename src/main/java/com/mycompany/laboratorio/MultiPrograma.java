@@ -14,7 +14,13 @@ public class MultiPrograma {
         Database database = new Database();
         database.operarDatabase();
         }
-         
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         if(args.length != 3){
             System.out.println("Para executar o programa: MultiPrograma <tipo> <identificador> <porta>");
             System.exit(0);
