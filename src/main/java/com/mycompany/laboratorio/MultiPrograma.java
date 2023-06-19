@@ -11,14 +11,11 @@ public class MultiPrograma {
         boolean exists = arquivodb.exists();
         
         if(!exists){
+            System.out.println("Criando o banco de dados.");
         Database database = new Database();
         database.operarDatabase();
-        }
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        }else {
+            System.out.println("Banco de dados disponível.");
         }
 
         if(args.length != 3){
@@ -40,6 +37,10 @@ public class MultiPrograma {
             case "vendedor":
                 Vendedor vendedor = new Vendedor(porta, nome);
                 vendedor.run();
+                break;
+            case "servidor":
+                Servidor servidor = new Servidor(porta, nome);
+                servidor.run();
                 break;
             default:
                 System.out.println("Tipo não válido!");

@@ -89,19 +89,19 @@ public class Database {
 
         String insertProdutoQuery = "INSERT INTO produtos (nome, preco) VALUES (?, ?)";
         PreparedStatement insertProdutoStmt = connection.prepareStatement(insertProdutoQuery);
-        insertProdutoStmt.setString(1, "Livro");
-        insertProdutoStmt.setBigDecimal(2, new BigDecimal("29.99"));
+        insertProdutoStmt.setString(1, "livro");
+        insertProdutoStmt.setBigDecimal(2, new BigDecimal("19.99"));
         insertProdutoStmt.executeUpdate();
 
-        insertProdutoStmt.setString(1, "Caneta");
+        insertProdutoStmt.setString(1, "caneta");
         insertProdutoStmt.setBigDecimal(2, new BigDecimal("1.99"));
         insertProdutoStmt.executeUpdate();
 
-        insertProdutoStmt.setString(1, "Lápis");
+        insertProdutoStmt.setString(1, "borracha");
         insertProdutoStmt.setBigDecimal(2, new BigDecimal("0.99"));
         insertProdutoStmt.executeUpdate();
 
-        insertProdutoStmt.setString(1, "Caderno");
+        insertProdutoStmt.setString(1, "caderno");
         insertProdutoStmt.setBigDecimal(2, new BigDecimal("4.99"));
         insertProdutoStmt.executeUpdate();
 

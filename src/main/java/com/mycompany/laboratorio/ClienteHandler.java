@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.*;
 
 public class ClienteHandler implements Runnable {
 
@@ -47,6 +48,22 @@ public class ClienteHandler implements Runnable {
                     out.println("OK");
                     Eleicao.getInstance().atualizarLider(Integer.valueOf(protocolo[1]));
                     break;
+                case "05":
+                    if (protocolo.length >= 5) {
+                        int quantidade = Integer.parseInt(protocolo[1]);
+                        String nomeProduto = protocolo[2];
+                        String nomeVendedor = protocolo[3];
+                        String dataVenda = protocolo[4];
+
+                        boolean vendaRealizada = realizarVenda(nomeVendedor, nomeProduto, quantidade, dataVenda);
+
+                        if (vendaRealizada){
+                            out.println("OK");
+                        } else {
+                            out.println("ERRO");
+                        }
+                    }
+                    break;
                 default:
                     System.out.println("codigo: " + protocolo[0]);
                     out.println("09|Error");
@@ -62,5 +79,50 @@ public class ClienteHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean realizarVenda(String nomeVendedor, String nomeProduto, int quantidade, String dataVenda) {
+        boolean vendaRealizada = false;
+        try {
+            Connection connection = null;
+            connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String selectVendedorQuery = "SELECT id FROM vendedores WHERE nome = ?";
+            PreparedStatement selectVendedorStmt = connection.prepareStatement(selectVendedorQuery);
+            selectVendedorStmt.setString(1, nomeVendedor);
+            ResultSet rsVendedor = selectVendedorStmt.executeQuery();
+
+            int vendedorId = -1;
+            if (rsVendedor.next()) {
+                vendedorId = rsVendedor.getInt("id");
+            }
+
+            String selectProdutoQuery = "SELECT id FROM produtos WHERE nome = ?";
+            PreparedStatement selectProdutoStmt = connection.prepareStatement(selectProdutoQuery);
+            selectProdutoStmt.setString(1, nomeProduto);
+            ResultSet rsProduto = selectProdutoStmt.executeQuery();
+
+            int produtoId = -1;
+            if (rsProduto.next()) {
+                produtoId = rsProduto.getInt("id");
+            }
+
+            if (vendedorId != -1 || produtoId != -1) {
+                vendaRealizada = true;
+            }
+
+            String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, data_venda) VALUES (?, ?, ?, ?)";
+            PreparedStatement insertVendaStmt = connection.prepareStatement(insertVendaQuery);
+
+            insertVendaStmt.setInt(1, vendedorId);
+            insertVendaStmt.setInt(2, produtoId);
+            insertVendaStmt.setInt(3, quantidade);
+            insertVendaStmt.setString(4, dataVenda);
+            insertVendaStmt.executeUpdate();
+
+        } catch(SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return vendaRealizada;
     }
 }
