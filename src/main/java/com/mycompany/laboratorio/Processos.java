@@ -1,5 +1,6 @@
 package com.mycompany.laboratorio;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 
@@ -10,7 +11,7 @@ public class Processos {
     private Map<Integer, Processo> processos;    
     private Processo me;
     private Processo lider;
-    
+
     private Integer totalProcesso;
 
     public Map<Integer, Processo> getProcessos() {
@@ -73,5 +74,17 @@ public class Processos {
         int index = rand.nextInt(processos.size());
         index = (index == 0) ? processos.size() : index;
         return processos.get(index);
+    }
+
+    public String checkServidor() {
+        try {
+            ClienteSocket socket = new ClienteSocket(this.lider.getHost(), this.lider.getPort());
+            socket.enviar("PING");
+            String resposta = socket.receber();
+
+            return resposta;
+        } catch (IOException ex) {
+            return "ERRO";
+        }
     }
 }

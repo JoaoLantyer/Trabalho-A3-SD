@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClienteHandler implements Runnable {
 
@@ -63,6 +65,11 @@ public class ClienteHandler implements Runnable {
                             out.println("ERRO");
                         }
                     }
+                    break;
+                case "06":
+
+                    out.println(exibirMelhorVendedor(protocolo[1]));
+
                     break;
                 default:
                     System.out.println("codigo: " + protocolo[0]);
@@ -125,4 +132,31 @@ public class ClienteHandler implements Runnable {
         }
         return vendaRealizada;
     }
+    public String exibirMelhorVendedor(String nomeVendedor) {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String query = "SELECT vendedores.nome, COUNT(*) AS vendas_count " +
+                    "FROM vendas " +
+                    "JOIN vendedores ON vendas.id_vendedor = vendedores.id " +
+                    "WHERE vendedores.nome = ? " +
+                    "GROUP BY vendedores.nome";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, nomeVendedor);
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int vendasCount = rs.getInt("vendas_count");
+                return "NOME DO VENDEDOR: " + nomeVendedor + ", VENDAS: " + vendasCount;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Vendedor não encontrado ou não possui vendas";
+    }
+
+
 }

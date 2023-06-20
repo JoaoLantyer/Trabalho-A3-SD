@@ -15,6 +15,10 @@ public class Vendedor extends Tipo {
     @Override
     public void run(){
         while(true){
+
+            if(Processos.getInstance().checkServidor() == "ERRO"){}
+
+
             if(!Eleicao.getInstance().isEleicaoIniciada()){
                 Processo processo = Processos.getInstance().getRandomProcesso();
                 if(!processo.isLider()){
