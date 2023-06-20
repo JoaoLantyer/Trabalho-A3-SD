@@ -25,6 +25,7 @@ public class Gerente extends Tipo {
                 if(!processo.isLider()){
                     try {
                         ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
+                        String resposta = "";
 
                         ExibirMenu();
 
@@ -46,7 +47,7 @@ public class Gerente extends Tipo {
 
                                 socket.enviar("06|" + nomeVendedor);
 
-                                String resposta = socket.receber();
+                                resposta = socket.receber();
                                 System.out.println("Resposta do servidor: " + resposta);
                                 break;
 
@@ -55,6 +56,8 @@ public class Gerente extends Tipo {
                                 String nomeProduto = scanner.nextLine();
 
                                 socket.enviar("07|" + nomeProduto);
+                                resposta = socket.receber();
+                                System.out.println("Resposta do servidor: " + resposta);
                                 break;
 
                             case 3:
@@ -64,12 +67,14 @@ public class Gerente extends Tipo {
                                 String dataFinal = scanner.nextLine();
 
                                 socket.enviar("08|" + dataInicial + "|" + dataFinal);
+
+                                resposta = socket.receber();
+                                System.out.println("Resposta do servidor: " + resposta);
                                 break;
                             case 4:
-                                System.out.print("digite o nome do vendedor:");
-                                String nomeMelhorVendedor = scanner.nextLine();
-
-                                socket.enviar("09|" + nomeMelhorVendedor);
+                                socket.enviar("09|");
+                                resposta = socket.receber();
+                                System.out.println("Resposta do servidor: " + resposta);
                                 break;
 
                             case 5:

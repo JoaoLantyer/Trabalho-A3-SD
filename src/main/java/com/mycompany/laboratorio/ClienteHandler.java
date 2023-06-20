@@ -68,12 +68,32 @@ public class ClienteHandler implements Runnable {
                     break;
                 case "06":
 
-                    out.println(exibirMelhorVendedor(protocolo[1]));
+                    out.println(exibirVendedorMaiorVendas(protocolo[1]));
+
+                    break;
+                case "07":
+
+                    out.println(exibirProdutoMaiorVendas(protocolo[1]));
+
+                    break;
+                case "08":
+
+                    out.println(exibirVendasDatas(protocolo[1], protocolo[2]));
+
+                    break;
+                case "09":
+
+                    out.println(exibirMelhorVendedor());
+
+                    break;
+                case "10":
+
+                    out.println(exibirMelhorProduto());
 
                     break;
                 default:
                     System.out.println("codigo: " + protocolo[0]);
-                    out.println("09|Error");
+                    out.println("11|Error");
                     break;
             }
             in.close();
@@ -132,7 +152,7 @@ public class ClienteHandler implements Runnable {
         }
         return vendaRealizada;
     }
-    public String exibirMelhorVendedor(String nomeVendedor) {
+    public String exibirVendedorMaiorVendas(String nomeVendedor) {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
@@ -158,5 +178,111 @@ public class ClienteHandler implements Runnable {
         return "Vendedor não encontrado ou não possui vendas";
     }
 
+    public String exibirProdutoMaiorVendas(String nomeProduto) {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String query = "SELECT produtos.nome, COUNT(*) AS vendas_count " +
+                    "FROM vendas " +
+                    "JOIN produtos ON vendas.id_produto = produtos.id " +
+                    "WHERE produtos.nome = ? " +
+                    "GROUP BY produtos.nome";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, nomeProduto);
+
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int vendasCount = rs.getInt("vendas_count");
+                return "NOME DO PRODUTO: " + nomeProduto + ", VENDAS: " + vendasCount;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Produto não encontrado ou não possui vendas";
+    }
+
+    public String exibirMelhorVendedor() {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String query = "SELECT vendedores.nome, COUNT(*) AS vendas_count " +
+                    "FROM vendas " +
+                    "JOIN vendedores ON vendas.id_vendedor = vendedores.id " +
+                    "GROUP BY vendedores.nome " +
+                    "ORDER BY vendas_count DESC " +
+                    "LIMIT 1";
+
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            if (rs.next()) {
+                String nomeVendedor = rs.getString("nome");
+                int vendasCount = rs.getInt("vendas_count");
+                return "NOME DO VENDEDOR: " + nomeVendedor + ", VENDAS: " + vendasCount;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Nenhum vendedor encontrado ou não há vendas registradas.";
+    }
+
+    public String exibirMelhorProduto() {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String query = "SELECT produtos.nome, COUNT(*) AS vendas_count " +
+                    "FROM vendas " +
+                    "JOIN produtos ON vendas.id_produto = produtos.id " +
+                    "GROUP BY produtos.nome " +
+                    "ORDER BY vendas_count DESC " +
+                    "LIMIT 1";
+
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            if (rs.next()) {
+                String nomeProduto = rs.getString("nome");
+                int vendasCount = rs.getInt("vendas_count");
+                return "NOME DO PRODUTO: " + nomeProduto + ", VENDAS: " + vendasCount;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Nenhum produto encontrado ou não há vendas registradas.";
+    }
+
+    public String exibirVendasDatas(String dataInicial, String dataFinal) {
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            String query = "SELECT * FROM vendas WHERE data_venda BETWEEN date(?) AND date(?)";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, dataInicial);
+            statement.setString(2, dataFinal);
+
+            ResultSet rs = statement.executeQuery();
+
+            int quantidadeTotal = 0;
+            while (rs.next()) {
+                quantidadeTotal += rs.getInt("quantidade");
+            }
+
+            if (quantidadeTotal > 0) {
+                return "Quantidade de vendas realizada neste período: " + quantidadeTotal;
+            } else {
+                return "Nenhuma venda realizada neste período.";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Erro ao recuperar as vendas.";
+    }
 
 }
