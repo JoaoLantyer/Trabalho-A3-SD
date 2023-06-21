@@ -213,21 +213,32 @@ public class ClienteHandler implements Runnable {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
-            String query = "SELECT vendedores.nome, COUNT(*) AS vendas_count " +
-                    "FROM vendas " +
-                    "JOIN vendedores ON vendas.id_vendedor = vendedores.id " +
-                    "GROUP BY vendedores.nome " +
-                    "ORDER BY vendas_count DESC " +
-                    "LIMIT 1";
+            float maiorValor = 0;
+            int vendedorId = 0;
 
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-
-            if (rs.next()) {
-                String nomeVendedor = rs.getString("nome");
-                int vendasCount = rs.getInt("vendas_count");
-                return "NOME DO VENDEDOR: " + nomeVendedor + ", VENDAS: " + vendasCount;
+            for(int i = 0; i < 6; i++) {
+                float valorAtual = 0;
+                String selectVendedorQuery = "SELECT valor_total FROM vendas WHERE id_vendedor = ?";
+                PreparedStatement selectVendedorStmt = connection.prepareStatement(selectVendedorQuery);
+                selectVendedorStmt.setInt(1, i);
+                ResultSet rsVendedor = selectVendedorStmt.executeQuery();
+                while (rsVendedor.next()) {
+                    valorAtual += rsVendedor.getFloat("valor_total");
+                }
+                if(valorAtual > maiorValor){
+                    maiorValor = valorAtual;
+                    vendedorId = i;
+                }
             }
+
+            String selectNomeVendedorQuery = "SELECT nome FROM vendedores WHERE id = ?";
+            PreparedStatement selectNomeVendedorStmt = connection.prepareStatement(selectNomeVendedorQuery);
+            selectNomeVendedorStmt.setInt(1, vendedorId);
+            ResultSet rsNomeVendedor = selectNomeVendedorStmt.executeQuery();
+            String nomeVendedor = rsNomeVendedor.getString("nome");
+
+                return "NOME DO VENDEDOR: " + nomeVendedor + ", VALOR TOTAL DE VENDAS: " + maiorValor;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
