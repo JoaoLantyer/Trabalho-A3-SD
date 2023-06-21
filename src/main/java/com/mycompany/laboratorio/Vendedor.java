@@ -11,7 +11,7 @@ public class Vendedor extends Tipo {
     public Vendedor(String porta, String nome){
         super(porta, nome);
     }
-    
+
     @Override
     public void run(){
         while(true){
@@ -23,11 +23,11 @@ public class Vendedor extends Tipo {
                 Processo processo = Processos.getInstance().getRandomProcesso();
                 if(!processo.isLider()){
                     try {
-                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());  
+                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
 
                         ExibirTabelas();
 
-                        System.out.println("REALIZAR UMA VENDA:");
+                        System.out.println("\nREALIZAR UMA VENDA:");
 
                         System.out.print("Digite o nome do vendedor: ");
                         String nomeVendedor = scanner.nextLine();
@@ -68,31 +68,41 @@ public class Vendedor extends Tipo {
         }
     }
 
-    public void ExibirTabelas(){
+    public void ExibirTabelas() {
         try {
             Connection connection = null;
             connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
             Statement statement1 = connection.createStatement();
             Statement statement2 = connection.createStatement();
-            Statement statement3 = connection.createStatement();
 
             ResultSet rsVendedores = statement1.executeQuery("SELECT * FROM vendedores");
             ResultSet rsProdutos = statement2.executeQuery("SELECT * FROM produtos");
-            ResultSet rsVendas = statement3.executeQuery("SELECT * FROM vendas");
 
-            while(rsVendedores.next()) {
-                System.out.println("NOME DO VENDEDOR  : " + rsVendedores.getString("nome"));
-            }
-            while(rsProdutos.next()) {
-                System.out.println("NOME DO PRODUTO  : " + rsProdutos.getString("nome"));
-            }
-            while(rsVendas.next()) {
-                System.out.println("VENDAS  : " + rsVendas.getInt("id_vendedor"));
+            System.out.println("NOME DO VENDEDORES:");
+            boolean primeiroVendedor = true;
+            while (rsVendedores.next()) {
+                if (!primeiroVendedor) {
+                    System.out.print(", ");
+                }
+                System.out.print(rsVendedores.getString("nome"));
+                primeiroVendedor = false;
             }
 
-        } catch(SQLException e) {
+            System.out.println("\nNOME DO PRODUTOS:");
+            boolean primeiroProduto = true;
+            while (rsProdutos.next()) {
+                if (!primeiroProduto) {
+                    System.out.print(", ");
+                }
+                System.out.print(rsProdutos.getString("nome"));
+
+                primeiroProduto = false;
+            }
+
+        } catch (SQLException e) {
             System.err.println(e.getMessage());
         }
     }
+
 }

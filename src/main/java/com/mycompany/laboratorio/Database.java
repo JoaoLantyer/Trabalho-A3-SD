@@ -58,6 +58,7 @@ public class Database {
                     "id_vendedor INTEGER NOT NULL," +
                     "id_produto INTEGER NOT NULL," +
                     "quantidade INTEGER NOT NULL," +
+                    "valor_total DECIMAL(10,2) NOT NULL," +
                     "data_venda TEXT NOT NULL," +
                     "FOREIGN KEY (id_vendedor) REFERENCES vendedores(id)," +
                     "FOREIGN KEY (id_produto) REFERENCES produtos(id))");
@@ -105,37 +106,42 @@ public class Database {
         insertProdutoStmt.setBigDecimal(2, new BigDecimal("4.99"));
         insertProdutoStmt.executeUpdate();
 
-        String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, data_venda) VALUES (?, ?, ?, ?)";
+        String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, valor_total, data_venda) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement insertVendaStmt = connection.prepareStatement(insertVendaQuery);
 
         insertVendaStmt.setInt(1, 5);
         insertVendaStmt.setInt(2, 3);
         insertVendaStmt.setInt(3, 2);
-        insertVendaStmt.setString(4, "2023-02-11");
+        insertVendaStmt.setBigDecimal(4, new BigDecimal("1.98"));
+        insertVendaStmt.setString(5, "2023-02-11");
         insertVendaStmt.executeUpdate();
 
         insertVendaStmt.setInt(1, 4);
         insertVendaStmt.setInt(2, 4);
         insertVendaStmt.setInt(3, 1);
-        insertVendaStmt.setString(4, "2023-04-23");
+        insertVendaStmt.setBigDecimal(4, new BigDecimal("4.99"));
+        insertVendaStmt.setString(5, "2023-04-23");
         insertVendaStmt.executeUpdate();
 
         insertVendaStmt.setInt(1, 1);
         insertVendaStmt.setInt(2, 1);
         insertVendaStmt.setInt(3, 5);
-        insertVendaStmt.setString(4, "2023-06-12");
+        insertVendaStmt.setBigDecimal(4, new BigDecimal("99.95"));
+        insertVendaStmt.setString(5, "2023-06-12");
         insertVendaStmt.executeUpdate();
         
         insertVendaStmt.setInt(1, 2);
         insertVendaStmt.setInt(2, 2);
         insertVendaStmt.setInt(3, 3);
-        insertVendaStmt.setString(4, "2023-10-03");
+        insertVendaStmt.setBigDecimal(4, new BigDecimal("5.97"));
+        insertVendaStmt.setString(5, "2023-10-03");
         insertVendaStmt.executeUpdate();
 
         insertVendaStmt.setInt(1, 3);
-        insertVendaStmt.setInt(2, 3);
-        insertVendaStmt.setInt(3, 2);
-        insertVendaStmt.setString(4, "2023-12-30");
+        insertVendaStmt.setInt(2, 4);
+        insertVendaStmt.setInt(3, 3);
+        insertVendaStmt.setBigDecimal(4, new BigDecimal("14.97"));
+        insertVendaStmt.setString(5, "2023-12-30");
         insertVendaStmt.executeUpdate();
 
         System.out.println("Dados inseridos com sucesso.");

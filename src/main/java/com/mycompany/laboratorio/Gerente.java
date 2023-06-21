@@ -25,7 +25,7 @@ public class Gerente extends Tipo {
                 if(!processo.isLider()){
                     try {
                         ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
-                        String resposta = "";
+                        String resposta;
 
                         ExibirMenu();
 
@@ -61,9 +61,9 @@ public class Gerente extends Tipo {
                                 break;
 
                             case 3:
-                                System.out.print("digite a data inicial:");
+                                System.out.print("digite a data inicial (no formato AAAA-MM-DD):");
                                 String dataInicial = scanner.nextLine();
-                                System.out.print("digite a data final:");
+                                System.out.print("digite a data final (no formato AAAA-MM-DD):");
                                 String dataFinal = scanner.nextLine();
 
                                 socket.enviar("08|" + dataInicial + "|" + dataFinal);
@@ -78,10 +78,9 @@ public class Gerente extends Tipo {
                                 break;
 
                             case 5:
-                                System.out.print("digite o nome do produto:");
-                                String nomeMelhorProduto = scanner.nextLine();
-
-                                socket.enviar("10|" + nomeMelhorProduto);
+                                socket.enviar("10|");
+                                resposta = socket.receber();
+                                System.out.println("Resposta do servidor: " + resposta);
                                 break;
 
                             default:

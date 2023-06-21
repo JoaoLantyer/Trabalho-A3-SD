@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.net.Socket;
 import java.sql.*;
 import java.util.HashMap;
@@ -124,27 +125,31 @@ public class ClienteHandler implements Runnable {
                 vendedorId = rsVendedor.getInt("id");
             }
 
-            String selectProdutoQuery = "SELECT id FROM produtos WHERE nome = ?";
+            String selectProdutoQuery = "SELECT id, preco FROM produtos WHERE nome = ?";
             PreparedStatement selectProdutoStmt = connection.prepareStatement(selectProdutoQuery);
             selectProdutoStmt.setString(1, nomeProduto);
             ResultSet rsProduto = selectProdutoStmt.executeQuery();
 
+            float valorTotal = -1;
             int produtoId = -1;
+
             if (rsProduto.next()) {
                 produtoId = rsProduto.getInt("id");
+                valorTotal = quantidade * (rsProduto.getFloat("preco"));
             }
 
-            if (vendedorId != -1 || produtoId != -1) {
+            if (vendedorId != -1 && produtoId != -1) {
                 vendaRealizada = true;
             }
 
-            String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, data_venda) VALUES (?, ?, ?, ?)";
+            String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, valor_total, data_venda) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement insertVendaStmt = connection.prepareStatement(insertVendaQuery);
 
             insertVendaStmt.setInt(1, vendedorId);
             insertVendaStmt.setInt(2, produtoId);
             insertVendaStmt.setInt(3, quantidade);
-            insertVendaStmt.setString(4, dataVenda);
+            insertVendaStmt.setBigDecimal(4, new BigDecimal(valorTotal));
+            insertVendaStmt.setString(5, dataVenda);
             insertVendaStmt.executeUpdate();
 
         } catch(SQLException e) {
