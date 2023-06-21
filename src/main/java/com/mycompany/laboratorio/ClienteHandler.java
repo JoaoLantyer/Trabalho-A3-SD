@@ -250,21 +250,32 @@ public class ClienteHandler implements Runnable {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
-            String query = "SELECT produtos.nome, COUNT(*) AS vendas_count " +
-                    "FROM vendas " +
-                    "JOIN produtos ON vendas.id_produto = produtos.id " +
-                    "GROUP BY produtos.nome " +
-                    "ORDER BY vendas_count DESC " +
-                    "LIMIT 1";
+            float maiorValor = 0;
+            int produtoId = 0;
 
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-
-            if (rs.next()) {
-                String nomeProduto = rs.getString("nome");
-                int vendasCount = rs.getInt("vendas_count");
-                return "NOME DO PRODUTO: " + nomeProduto + ", VENDAS: " + vendasCount;
+            for(int i = 0; i < 6; i++) {
+                float valorAtual = 0;
+                String selectProdutoQuery = "SELECT valor_total FROM vendas WHERE id_produto = ?";
+                PreparedStatement selectProdutoStmt = connection.prepareStatement(selectProdutoQuery);
+                selectProdutoStmt.setInt(1, i);
+                ResultSet rsProduto = selectProdutoStmt.executeQuery();
+                while (rsProduto.next()) {
+                    valorAtual += rsProduto.getFloat("valor_total");
+                }
+                if(valorAtual > maiorValor){
+                    maiorValor = valorAtual;
+                    produtoId = i;
+                }
             }
+
+            String selectNomeProdutoQuery = "SELECT nome FROM produtos WHERE id = ?";
+            PreparedStatement selectNomeProdutoStmt = connection.prepareStatement(selectNomeProdutoQuery);
+            selectNomeProdutoStmt.setInt(1, produtoId);
+            ResultSet rsNomeProduto = selectNomeProdutoStmt.executeQuery();
+            String nomeProduto = rsNomeProduto.getString("nome");
+
+            return "NOME DO PRODUTO: " + nomeProduto + ", VALOR TOTAL DE VENDAS: " + maiorValor;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
