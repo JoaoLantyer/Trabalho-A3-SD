@@ -92,6 +92,12 @@ public class ClienteHandler implements Runnable {
                     out.println(exibirMelhorProduto());
 
                     break;
+                case "11":
+
+                    out.println(protocolo[1]);
+
+                    break;
+
                 default:
                     System.out.println("codigo: " + protocolo[0]);
                     out.println("11|Error");
@@ -110,6 +116,9 @@ public class ClienteHandler implements Runnable {
     }
 
     public boolean realizarVenda(String nomeVendedor, String nomeProduto, int quantidade, String dataVenda) {
+        if (!Processos.getInstance().checkServidor().equals("OK")) {
+            Eleicao.getInstance().callEleicao();
+        }
         boolean vendaRealizada = false;
         try {
             Connection connection = null;
@@ -158,6 +167,12 @@ public class ClienteHandler implements Runnable {
         return vendaRealizada;
     }
     public String exibirVendedorMaiorVendas(String nomeVendedor) {
+
+        System.out.println("TESTE PROCESSO: " + Processos.getInstance().checkServidor());
+
+        if (!Processos.getInstance().checkServidor().equals("PING")) {
+            Eleicao.getInstance().callEleicao();
+        }
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
@@ -184,6 +199,9 @@ public class ClienteHandler implements Runnable {
     }
 
     public String exibirProdutoMaiorVendas(String nomeProduto) {
+        if (!Processos.getInstance().checkServidor().equals("OK")) {
+            Eleicao.getInstance().callEleicao();
+        }
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
@@ -210,6 +228,9 @@ public class ClienteHandler implements Runnable {
     }
 
     public String exibirMelhorVendedor() {
+        if (!Processos.getInstance().checkServidor().equals("OK")) {
+            Eleicao.getInstance().callEleicao();
+        }
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
@@ -247,6 +268,9 @@ public class ClienteHandler implements Runnable {
     }
 
     public String exibirMelhorProduto() {
+        if (!Processos.getInstance().checkServidor().equals("OK")) {
+            Eleicao.getInstance().callEleicao();
+        }
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 
@@ -284,6 +308,9 @@ public class ClienteHandler implements Runnable {
     }
 
     public String exibirVendasDatas(String dataInicial, String dataFinal) {
+        if (!Processos.getInstance().checkServidor().equals("OK")) {
+            Eleicao.getInstance().callEleicao();
+        }
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 

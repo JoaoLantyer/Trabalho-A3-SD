@@ -14,62 +14,63 @@ public class Vendedor extends Tipo {
 
     @Override
     public void run(){
-        while(true){
-
-            if(Processos.getInstance().checkServidor() == "ERRO"){}
+        while(true) {
 
 
-            if(!Eleicao.getInstance().isEleicaoIniciada()){
-                Processo processo = Processos.getInstance().getRandomProcesso();
-                if(!processo.isLider()){
-                    try {
-                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
+                if (!Eleicao.getInstance().isEleicaoIniciada()) {
+                    Processo processo = Processos.getInstance().getRandomProcesso();
+                    if (!processo.isLider()) {
+                        try {
+                            ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
 
-                        ExibirTabelas();
+                            ExibirTabelas();
 
-                        System.out.println("\nREALIZAR UMA VENDA:");
+                            System.out.println("\nREALIZAR UMA VENDA:");
 
-                        System.out.print("Digite o nome do vendedor: ");
-                        String nomeVendedor = scanner.nextLine();
+                            System.out.print("Digite o nome do vendedor: ");
+                            String nomeVendedor = scanner.nextLine();
 
-                        System.out.print("Digite o nome do produto: ");
-                        String nomeProduto = scanner.nextLine();
+                            System.out.print("Digite o nome do produto: ");
+                            String nomeProduto = scanner.nextLine();
 
-                        System.out.print("Digite a quantidade de " + nomeProduto + "s vendidos: ");
-                        int quantidade = scanner.nextInt();
-                        scanner.nextLine();
+                            System.out.print("Digite a quantidade de " + nomeProduto + "s vendidos: ");
+                            int quantidade = scanner.nextInt();
+                            scanner.nextLine();
 
-                        System.out.print("Digite a data da venda (no formato AAAA-MM-DD): ");
-                        String dataVenda = scanner.nextLine();
+                            System.out.print("Digite a data da venda (no formato AAAA-MM-DD): ");
+                            String dataVenda = scanner.nextLine();
 
 
-                        socket.enviar("05|" + quantidade + "|" + nomeProduto + "|" + nomeVendedor + "|" + dataVenda);
+                            socket.enviar("05|" + quantidade + "|" + nomeProduto + "|" + nomeVendedor + "|" + dataVenda);
 
-                        String resposta = socket.receber();
-                        if(resposta.equals("OK") || resposta.equals("ERRO")) {
-                            System.out.println("Resposta do servidor: " + resposta);
+                            String resposta = socket.receber();
+                            if (resposta.equals("OK") || resposta.equals("ERRO")) {
+                                System.out.println("Resposta do servidor: " + resposta);
+                            }
+
+                            Thread.sleep(1000 * 5);
+                        } catch (IOException ex) {
+                            Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
-
-                        Thread.sleep(1000*5);
-                    } catch (IOException ex) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE,"Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    this.checkLider();
-                    try {
-                        Thread.sleep(1000*5);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    } else {
+                        this.checkLider();
+                        try {
+                            Thread.sleep(1000 * 5);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
-            }
         }
     }
 
     public void ExibirTabelas() {
         try {
+            if (!Processos.getInstance().checkServidor().equals("PING")) {
+                Eleicao.getInstance().callEleicao();
+            }
             Connection connection = null;
             connection = DriverManager.getConnection("jdbc:sqlite:database.db");
 

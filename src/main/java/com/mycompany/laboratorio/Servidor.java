@@ -6,38 +6,26 @@ import java.util.logging.Logger;
 
 
 public class Servidor extends Tipo {
-    public Servidor(String porta, String nome){
+    public Servidor(String porta, String nome) {
         super(porta, nome);
     }
 
     @Override
-    public void run(){
-        while(true){
-            if(!Eleicao.getInstance().isEleicaoIniciada()){
+    public void run() {
+        while (true) {
+            if (!Eleicao.getInstance().isEleicaoIniciada()) {
                 Processo processo = Processos.getInstance().getRandomProcesso();
-                if(!processo.isLider()){
-                    try {
-                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
-
-                        String resposta = socket.receber();
-                        System.out.println("Resposta: " + resposta);
-
-                            System.out.println("Dormi");
-                            Thread.sleep(1000*60);
-                            System.out.println("Acordei");
-                            Thread.sleep(1000*60);
-
-                    } catch (IOException ex) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE,"Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
-                    } catch (InterruptedException e) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, null, e);
-                    }
+                if (!processo.isLider()) {
                 } else {
                     this.checkLider();
                     try {
-                        Thread.sleep(1000*5);
-                    } catch (InterruptedException e) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, null, e);
+                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
+                        if(socket.receber().equals("PING")){
+                            socket.enviar("11| OK");
+                        }
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
