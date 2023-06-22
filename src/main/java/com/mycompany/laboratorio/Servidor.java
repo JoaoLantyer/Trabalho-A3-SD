@@ -14,31 +14,26 @@ public class Servidor extends Tipo {
     public void run(){
         while(true){
             if(!Eleicao.getInstance().isEleicaoIniciada()){
+                Processo meuProcesso = Processos.getInstance().getMe();
                 Processo processo = Processos.getInstance().getRandomProcesso();
+
+                if(meuProcesso.isLider()){
+
                 if(!processo.isLider()){
-                    try {
-                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
 
-                        String resposta = socket.receber();
-                        System.out.println("Resposta: " + resposta);
+                        try {
+                            ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
 
-                            System.out.println("Dormi");
-                            Thread.sleep(1000*60);
-                            System.out.println("Acordei");
-                            Thread.sleep(1000*60);
-
-                    } catch (IOException ex) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE,"Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
-                    } catch (InterruptedException e) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, null, e);
+                            String resposta = socket.receber();
+                            System.out.println("Resposta: " + resposta);
+                        } catch (IOException ex) {
+                            Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE,"Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
+                        }
+                } else {
+                        this.checkLider();
                     }
                 } else {
-                    this.checkLider();
-                    try {
-                        Thread.sleep(1000*5);
-                    } catch (InterruptedException e) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, null, e);
-                    }
+                    Eleicao.getInstance().callEleicao();
                 }
             }
         }

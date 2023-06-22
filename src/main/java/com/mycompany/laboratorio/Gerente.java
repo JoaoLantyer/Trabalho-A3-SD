@@ -16,31 +16,44 @@ public class Gerente extends Tipo {
     public Gerente(String porta, String nome){
         super(porta, nome);
     }
-    
+
     @Override
     public void run(){
         while(true){
             if(!Eleicao.getInstance().isEleicaoIniciada()){
-                Processo processo = Processos.getInstance().getRandomProcesso();
-                if(!processo.isLider()){
+
+                if(Processos.getInstance().getMe() == Processos.getInstance().getLider()){
+                    System.out.println("Servidor indisponível, executando servidor temporário: ");
+                }
+
+                if(!Processos.getInstance().checkServidor()){
+                    Eleicao.getInstance().callEleicao();
+                }
+
+                Processo processoLider = Processos.getInstance().getLider();
+
                     try {
-                        ClienteSocket socket = new ClienteSocket(processo.getHost(), processo.getPort());
+
+                        Thread.sleep(500);
+
+                        ClienteSocket socket = new ClienteSocket(processoLider.getHost(), processoLider.getPort());
                         String resposta;
 
                         ExibirMenu();
 
                         int escolha;
 
-                        try{
+                        try {
+                            System.out.print("SUA ESCOLHA: ");
                             escolha = scanner.nextInt();
                             scanner.nextLine();
-                        } catch (InputMismatchException e){
+                        } catch (InputMismatchException e) {
                             System.out.println("ERRO! VALOR INVALIDO!");
                             run();
                             return;
                         }
 
-                        switch(escolha) {
+                        switch (escolha) {
                             case 1:
                                 System.out.print("digite o nome do vendedor: ");
                                 String nomeVendedor = scanner.nextLine();
@@ -84,24 +97,18 @@ public class Gerente extends Tipo {
                                 break;
 
                             default:
-                                 System.out.println("VALOR INVÁLIDO!");
+                                System.out.println("VALOR INVÁLIDO!");
                                 break;
                         }
 
                     } catch (IOException ex) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE,"Erro na conexao com " + processo.getIdentificador() + ": " + ex.getMessage());
-                    }
-                } else {
-                    this.checkLider();
-                    try {
-                        Thread.sleep(1000*5);
+                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processoLider.getIdentificador() + ": " + ex.getMessage());
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                }
+            }
             }
         }
-    }
 
     public void ExibirMenu(){
         System.out.println("-----------------------------------------------------------");

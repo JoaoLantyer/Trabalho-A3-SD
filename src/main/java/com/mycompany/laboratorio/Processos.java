@@ -76,15 +76,14 @@ public class Processos {
         return processos.get(index);
     }
 
-    public String checkServidor() {
+    public boolean checkServidor() {
         try {
             ClienteSocket socket = new ClienteSocket(this.lider.getHost(), this.lider.getPort());
             socket.enviar("PING");
-            String resposta = socket.receber();
 
-            return resposta;
+            return true;
         } catch (IOException ex) {
-            return "ERRO";
+            return false;
         }
     }
 }

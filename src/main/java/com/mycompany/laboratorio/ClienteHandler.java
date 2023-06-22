@@ -25,12 +25,12 @@ public class ClienteHandler implements Runnable {
 
     @Override
     public void run() {
+        Connection connection = null;
         try {
-            System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress());
+            connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             String msg = in.readLine();
-            System.out.println("Mensagem recebida: " + msg);
             String[] protocolo = msg.split("\\|");
             switch (protocolo[0]) {
                 case "01":
@@ -58,38 +58,51 @@ public class ClienteHandler implements Runnable {
                         String nomeVendedor = protocolo[3];
                         String dataVenda = protocolo[4];
 
-                        boolean vendaRealizada = realizarVenda(nomeVendedor, nomeProduto, quantidade, dataVenda);
+                        boolean vendaRealizada = realizarVenda(nomeVendedor, nomeProduto, quantidade, dataVenda, connection);
 
                         if (vendaRealizada){
-                            out.println("OK");
+                            out.println("OK - venda realizada");
                         } else {
-                            out.println("ERRO");
+                            out.println("ERRO - dados inválidos tente novamente");
                         }
                     }
+
+                    connection.close();
+
                     break;
                 case "06":
 
-                    out.println(exibirVendedorMaiorVendas(protocolo[1]));
+                    out.println(exibirVendedorMaiorVendas(protocolo[1], connection));
+
+                    connection.close();
 
                     break;
                 case "07":
 
-                    out.println(exibirProdutoMaiorVendas(protocolo[1]));
+                    out.println(exibirProdutoMaiorVendas(protocolo[1], connection));
+
+                    connection.close();
 
                     break;
                 case "08":
 
-                    out.println(exibirVendasDatas(protocolo[1], protocolo[2]));
+                    out.println(exibirVendasDatas(protocolo[1], protocolo[2], connection));
+
+                    connection.close();
 
                     break;
                 case "09":
 
-                    out.println(exibirMelhorVendedor());
+                    out.println(exibirMelhorVendedor(connection));
+
+                    connection.close();
 
                     break;
                 case "10":
 
-                    out.println(exibirMelhorProduto());
+                    out.println(exibirMelhorProduto(connection));
+
+                    connection.close();
 
                     break;
                 default:
@@ -98,7 +111,7 @@ public class ClienteHandler implements Runnable {
                     break;
             }
             in.close();
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -109,12 +122,10 @@ public class ClienteHandler implements Runnable {
         }
     }
 
-    public boolean realizarVenda(String nomeVendedor, String nomeProduto, int quantidade, String dataVenda) {
+
+    public boolean realizarVenda(String nomeVendedor, String nomeProduto, int quantidade, String dataVenda, Connection connection) {
         boolean vendaRealizada = false;
         try {
-            Connection connection = null;
-            connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             String selectVendedorQuery = "SELECT id FROM vendedores WHERE nome = ?";
             PreparedStatement selectVendedorStmt = connection.prepareStatement(selectVendedorQuery);
             selectVendedorStmt.setString(1, nomeVendedor);
@@ -157,10 +168,8 @@ public class ClienteHandler implements Runnable {
         }
         return vendaRealizada;
     }
-    public String exibirVendedorMaiorVendas(String nomeVendedor) {
+    public String exibirVendedorMaiorVendas(String nomeVendedor, Connection connection) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             String query = "SELECT vendedores.nome, COUNT(*) AS vendas_count " +
                     "FROM vendas " +
                     "JOIN vendedores ON vendas.id_vendedor = vendedores.id " +
@@ -180,13 +189,11 @@ public class ClienteHandler implements Runnable {
             e.printStackTrace();
         }
 
-        return "Vendedor não encontrado ou não possui vendas";
+        return "ERRO - Vendedor não encontrado ou não possui vendas";
     }
 
-    public String exibirProdutoMaiorVendas(String nomeProduto) {
+    public String exibirProdutoMaiorVendas(String nomeProduto, Connection connection) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             String query = "SELECT produtos.nome, COUNT(*) AS vendas_count " +
                     "FROM vendas " +
                     "JOIN produtos ON vendas.id_produto = produtos.id " +
@@ -206,13 +213,11 @@ public class ClienteHandler implements Runnable {
             e.printStackTrace();
         }
 
-        return "Produto não encontrado ou não possui vendas";
+        return "ERRO - Produto não encontrado ou não possui vendas";
     }
 
-    public String exibirMelhorVendedor() {
+    public String exibirMelhorVendedor(Connection connection) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             float maiorValor = 0;
             int vendedorId = 0;
 
@@ -237,19 +242,17 @@ public class ClienteHandler implements Runnable {
             ResultSet rsNomeVendedor = selectNomeVendedorStmt.executeQuery();
             String nomeVendedor = rsNomeVendedor.getString("nome");
 
-                return "NOME DO VENDEDOR: " + nomeVendedor + ", VALOR TOTAL DE VENDAS: " + maiorValor;
+                return "NOME DO VENDEDOR: " + nomeVendedor + ", VALOR TOTAL DE VENDAS: R$ " + maiorValor;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return "Nenhum vendedor encontrado ou não há vendas registradas.";
+        return "ERRO - Nenhum vendedor encontrado ou não há vendas registradas.";
     }
 
-    public String exibirMelhorProduto() {
+    public String exibirMelhorProduto(Connection connection) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             float maiorValor = 0;
             int produtoId = 0;
 
@@ -280,13 +283,11 @@ public class ClienteHandler implements Runnable {
             e.printStackTrace();
         }
 
-        return "Nenhum produto encontrado ou não há vendas registradas.";
+        return "ERRO - Nenhum produto encontrado ou não há vendas registradas.";
     }
 
-    public String exibirVendasDatas(String dataInicial, String dataFinal) {
+    public String exibirVendasDatas(String dataInicial, String dataFinal, Connection connection) {
         try {
-            Connection connection = DriverManager.getConnection("jdbc:sqlite:database.db");
-
             String query = "SELECT * FROM vendas WHERE data_venda BETWEEN date(?) AND date(?)";
 
             PreparedStatement statement = connection.prepareStatement(query);
@@ -309,7 +310,7 @@ public class ClienteHandler implements Runnable {
             e.printStackTrace();
         }
 
-        return "Erro ao recuperar as vendas.";
+        return "ERRO - Erro ao recuperar as vendas.";
     }
 
 }
