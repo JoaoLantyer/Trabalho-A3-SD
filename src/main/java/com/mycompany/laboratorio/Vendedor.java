@@ -80,8 +80,41 @@ public class Vendedor extends Tipo {
         }
 
     public void ExibirTabelas() {
-        System.out.println("NOME DOS VENDEDORES: joao, paulo, nelson, gabriel, rafael");
-        System.out.println("NOME DOS PRODUTOS: livro, caneta, borracha, caderno");
+        try {
+            Connection connection = null;
+            connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+
+            Statement statement1 = connection.createStatement();
+            Statement statement2 = connection.createStatement();
+
+            ResultSet rsVendedores = statement1.executeQuery("SELECT * FROM vendedores");
+            ResultSet rsProdutos = statement2.executeQuery("SELECT * FROM produtos");
+
+            System.out.println("NOME DO VENDEDORES:");
+            boolean primeiroVendedor = true;
+            while (rsVendedores.next()) {
+                if (!primeiroVendedor) {
+                    System.out.print(", ");
+                }
+                System.out.print(rsVendedores.getString("nome"));
+                primeiroVendedor = false;
+            }
+
+            System.out.println("\nNOME DO PRODUTOS:");
+            boolean primeiroProduto = true;
+            while (rsProdutos.next()) {
+                if (!primeiroProduto) {
+                    System.out.print(", ");
+                }
+                System.out.print(rsProdutos.getString("nome"));
+
+                primeiroProduto = false;
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+
     }
 
 }
