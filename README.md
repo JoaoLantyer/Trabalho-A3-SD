@@ -1,7 +1,6 @@
-	# Projeto A3 de Sistemas Distribuídos
+# Projeto A3 de Sistemas Distribuídos
 
-    Para utilizar o aplicativo você precisa ter a versão mais recente do Java SE Development Kit (JDK) instalada em seu computador e utilizar o sistema operacional Windows.
-
+Para utilizar o aplicativo você precisa ter a versão mais recente do Java SE Development Kit (JDK) instalada em seu computador e utilizar o sistema operacional Windows.
 1.	Baixe o arquivo .zip do repositório e descompacte.
 2.	Caso o arquivo “database.db” não exista, execute “startServidor.bat” uma vez. Isso irá abrir o processo “Servidor” e criar o banco de dados com os dados necessários.
 3.	Com o arquivo “database.db” disponível na pasta, execute “startProcessos.bat”. Isso irá abrir 5 processos diferentes, um processo “Servidor”, dois processos “Gerente” e dois processos “Vendedor”.
