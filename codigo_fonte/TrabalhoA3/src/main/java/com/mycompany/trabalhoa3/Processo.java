@@ -1,19 +1,19 @@
-package com.mycompany.laboratorio;
+package com.mycompany.trabalhoa3;
 
 public class Processo {
     private Integer identificador;
     private String host;
     private Integer port;
-     public boolean isLider = false;
+    public boolean isLider = false;
 
     public boolean isLider() {
         return isLider;
     }
-    
+
     public void setIsLider(boolean isLider) {
         this.isLider = isLider;
     }
-    
+
     public Processo(Integer identificador, String host, Integer port){
         this.identificador = identificador;
         this.host = host;
@@ -43,5 +43,5 @@ public class Processo {
     public void setPort(Integer port) {
         this.port = port;
     }
-    
+
 }

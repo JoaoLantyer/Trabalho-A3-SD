@@ -1,4 +1,4 @@
-package com.mycompany.laboratorio;
+package com.mycompany.trabalhoa3;
 
 import java.io.IOException;
 import java.sql.*;
@@ -30,54 +30,54 @@ public class Vendedor extends Tipo {
                 Processo processoLider = Processos.getInstance().getLider();
 
 
+                try {
+
+                    Thread.sleep(500);
+
+                    ClienteSocket socket = new ClienteSocket(processoLider.getHost(), processoLider.getPort());
+
+                    ExibirTabelas();
+
                     try {
 
-                        Thread.sleep(500);
+                        System.out.println("\nREALIZAR UMA VENDA:");
 
-                        ClienteSocket socket = new ClienteSocket(processoLider.getHost(), processoLider.getPort());
+                        System.out.print("Digite o nome do vendedor: ");
+                        String nomeVendedor = scanner.nextLine();
 
-                        ExibirTabelas();
+                        System.out.print("Digite o nome do produto: ");
+                        String nomeProduto = scanner.nextLine();
 
-                        try {
+                        System.out.print("Digite a quantidade de " + nomeProduto + "s vendidos: ");
+                        int quantidade = scanner.nextInt();
+                        scanner.nextLine();
 
-                            System.out.println("\nREALIZAR UMA VENDA:");
-
-                            System.out.print("Digite o nome do vendedor: ");
-                            String nomeVendedor = scanner.nextLine();
-
-                            System.out.print("Digite o nome do produto: ");
-                            String nomeProduto = scanner.nextLine();
-
-                            System.out.print("Digite a quantidade de " + nomeProduto + "s vendidos: ");
-                            int quantidade = scanner.nextInt();
-                            scanner.nextLine();
-
-                            System.out.print("Digite a data da venda (no formato AAAA-MM-DD): ");
-                            String dataVenda = scanner.nextLine();
+                        System.out.print("Digite a data da venda (no formato AAAA-MM-DD): ");
+                        String dataVenda = scanner.nextLine();
 
 
-                            socket.enviar("05|" + nomeVendedor + "|" + nomeProduto + "|" + quantidade + "|" + dataVenda);
+                        socket.enviar("05|" + nomeVendedor + "|" + nomeProduto + "|" + quantidade + "|" + dataVenda);
 
-                        } catch (InputMismatchException e) {
-                            System.out.println("ERRO! VALOR INVALIDO!");
-                            run();
-                            return;
-                        }
-
-                        String resposta = socket.receber();
-                        if (resposta.equals("OK - venda realizada") || resposta.equals("ERRO - dados inválidos tente novamente")) {
-                            System.out.println("Resposta do servidor: " + resposta);
-                        }
-
-                        Thread.sleep(1000 * 5);
-                    } catch (IOException ex) {
-                        Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processoLider.getIdentificador() + ": " + ex.getMessage());
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    } catch (InputMismatchException e) {
+                        System.out.println("ERRO! VALOR INVALIDO!");
+                        run();
+                        return;
                     }
+
+                    String resposta = socket.receber();
+                    if (resposta.equals("OK - venda realizada") || resposta.equals("ERRO - dados inválidos tente novamente")) {
+                        System.out.println("Resposta do servidor: " + resposta);
+                    }
+
+                    Thread.sleep(1000 * 5);
+                } catch (IOException ex) {
+                    Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processoLider.getIdentificador() + ": " + ex.getMessage());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
+    }
 
     public void ExibirTabelas() {
         try {

@@ -1,4 +1,4 @@
-package com.mycompany.laboratorio;
+package com.mycompany.trabalhoa3;
 
 import java.io.IOException;
 import java.util.Map;
@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class Processos {
     private static Processos uniqueInstance;
-    
-    private Map<Integer, Processo> processos;    
+
+    private Map<Integer, Processo> processos;
     private Processo me;
     private Processo lider;
 
@@ -45,30 +45,30 @@ public class Processos {
     public void setTotalProcesso(Integer totalProcesso) {
         this.totalProcesso = totalProcesso;
     }
-    
-    
-    
+
+
+
     private Processos(){
     }
-    
+
     public static synchronized Processos getInstance(){
         if (uniqueInstance == null){
             uniqueInstance = new Processos();
         }
-        return uniqueInstance;   
+        return uniqueInstance;
     }
-    
+
     public void config(Map processos, Processo me, Processo lider, Integer totalProcesso) {
         this.processos = processos;
         this.me = me;
         this.lider = lider;
         this.totalProcesso = totalProcesso;
     }
-    
-        public Processo getProcessoByIdentificador(Integer identificador) {
+
+    public Processo getProcessoByIdentificador(Integer identificador) {
         return processos.get(identificador);
     }
-    
+
     public Processo getRandomProcesso(){
         Random rand = new Random();
         int index = rand.nextInt(processos.size());

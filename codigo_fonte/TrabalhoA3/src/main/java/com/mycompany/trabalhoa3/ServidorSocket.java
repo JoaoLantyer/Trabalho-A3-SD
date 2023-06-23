@@ -1,4 +1,4 @@
-package com.mycompany.laboratorio;
+package com.mycompany.trabalhoa3;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,4 +1,4 @@
-package com.mycompany.laboratorio;
+package com.mycompany.trabalhoa3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -275,7 +275,7 @@ public class ClienteHandler implements Runnable {
             ResultSet rsNomeVendedor = selectNomeVendedorStmt.executeQuery();
             String nomeVendedor = rsNomeVendedor.getString("nome");
 
-                return "NOME DO VENDEDOR: " + nomeVendedor + ", VALOR TOTAL DE VENDAS: R$ " + maiorValor;
+            return "NOME DO VENDEDOR: " + nomeVendedor + ", VALOR TOTAL DE VENDAS: R$ " + maiorValor;
 
         } catch (SQLException e) {
             e.printStackTrace();
