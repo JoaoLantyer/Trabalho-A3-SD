@@ -6,15 +6,15 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class ClienteHandler implements Runnable {
 
     private Socket socket;
     private Integer identificador;
-
     private Processo me;
 
     public ClienteHandler(Socket socket, Integer identificador, Processo me) {
@@ -53,9 +53,9 @@ public class ClienteHandler implements Runnable {
                     break;
                 case "05":
                     if (protocolo.length >= 5) {
-                        int quantidade = Integer.parseInt(protocolo[1]);
+                        String nomeVendedor = protocolo[1];
                         String nomeProduto = protocolo[2];
-                        String nomeVendedor = protocolo[3];
+                        int quantidade = Integer.parseInt(protocolo[3]);
                         String dataVenda = protocolo[4];
 
                         boolean vendaRealizada = realizarVenda(nomeVendedor, nomeProduto, quantidade, dataVenda, connection);
@@ -67,19 +67,29 @@ public class ClienteHandler implements Runnable {
                         }
                     }
 
+                    System.out.println(protocolo[0] + " - Solicitação de venda recebida:\n" +
+                            "Vendedor: " + protocolo[1] +"\n" +
+                            "Produto: " + protocolo[2]+ "\n" +
+                            "Quantidade: " + protocolo[3] + "\n" +
+                            "Data: " + protocolo[4]);
+
                     connection.close();
 
                     break;
                 case "06":
 
-                    out.println(exibirVendedorMaiorVendas(protocolo[1], connection));
+                    out.println(exibirVendedorTotalVendas(protocolo[1], connection));
+
+                    System.out.println(protocolo[0] + " - Solicitação de consulta recebida, total de vendas de: " + protocolo[1]);
 
                     connection.close();
 
                     break;
                 case "07":
 
-                    out.println(exibirProdutoMaiorVendas(protocolo[1], connection));
+                    out.println(exibirProdutoTotalVendas(protocolo[1], connection));
+
+                    System.out.println(protocolo[0] + " - Solicitação de consulta recebida, total de vendas de: " + protocolo[1] + "s");
 
                     connection.close();
 
@@ -88,12 +98,16 @@ public class ClienteHandler implements Runnable {
 
                     out.println(exibirVendasDatas(protocolo[1], protocolo[2], connection));
 
+                    System.out.println(protocolo[0] + " - Solicitação de consulta recebida, total de vendas entre: " + protocolo[1] + " e " + protocolo[2]);
+
                     connection.close();
 
                     break;
                 case "09":
 
                     out.println(exibirMelhorVendedor(connection));
+
+                    System.out.println(protocolo[0] + " - Solicitação de consulta recebida, melhor vendedor");
 
                     connection.close();
 
@@ -102,17 +116,29 @@ public class ClienteHandler implements Runnable {
 
                     out.println(exibirMelhorProduto(connection));
 
+                    System.out.println(protocolo[0] + " - Solicitação de consulta recebida, melhor produto");
+
                     connection.close();
 
                     break;
+                case "11":
+
+                    System.out.println("PING recebido do cliente: " + socket.getInetAddress().getHostAddress());
+
+                    break;
                 default:
-                    System.out.println("codigo: " + protocolo[0]);
-                    out.println("11|Error");
+                    System.out.println("código: " + protocolo[0]);
+                    out.println("12|Error");
                     break;
             }
             in.close();
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            if (e instanceof SocketException) {
+                System.err.println("ERRO! Conexão perdida com um cliente ou servidor!");
+            }
+            if(e instanceof SQLException) {
+                e.printStackTrace();
+            }
         } finally {
             try {
                 socket.close();
@@ -153,6 +179,13 @@ public class ClienteHandler implements Runnable {
                 vendaRealizada = true;
             }
 
+            try {
+                LocalDate.parse(dataVenda);
+            } catch (DateTimeParseException e) {
+                System.err.println("ERRO! Formato de data inválido. Use o formato AAAA-MM-DD.");
+                vendaRealizada = false;
+            }
+
             String insertVendaQuery = "INSERT INTO vendas (id_vendedor, id_produto, quantidade, valor_total, data_venda) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement insertVendaStmt = connection.prepareStatement(insertVendaQuery);
 
@@ -168,7 +201,7 @@ public class ClienteHandler implements Runnable {
         }
         return vendaRealizada;
     }
-    public String exibirVendedorMaiorVendas(String nomeVendedor, Connection connection) {
+    public String exibirVendedorTotalVendas(String nomeVendedor, Connection connection) {
         try {
             String query = "SELECT vendedores.nome, COUNT(*) AS vendas_count " +
                     "FROM vendas " +
@@ -192,7 +225,7 @@ public class ClienteHandler implements Runnable {
         return "ERRO - Vendedor não encontrado ou não possui vendas";
     }
 
-    public String exibirProdutoMaiorVendas(String nomeProduto, Connection connection) {
+    public String exibirProdutoTotalVendas(String nomeProduto, Connection connection) {
         try {
             String query = "SELECT produtos.nome, COUNT(*) AS vendas_count " +
                     "FROM vendas " +

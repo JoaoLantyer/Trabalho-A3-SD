@@ -79,7 +79,7 @@ public class Processos {
     public boolean checkServidor() {
         try {
             ClienteSocket socket = new ClienteSocket(this.lider.getHost(), this.lider.getPort());
-            socket.enviar("PING");
+            socket.enviar("11| PING");
 
             return true;
         } catch (IOException ex) {

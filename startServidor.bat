@@ -1,0 +1,1 @@
+start java -jar target\laboratorio-1.0-SNAPSHOT.jar servidor 5 3005

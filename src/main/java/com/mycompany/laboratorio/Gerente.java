@@ -22,13 +22,15 @@ public class Gerente extends Tipo {
         while(true){
             if(!Eleicao.getInstance().isEleicaoIniciada()){
 
+
+                if(!Processos.getInstance().checkServidor() || Processos.getInstance().getLider() != Processos.getInstance().getProcessoByIdentificador(5)){
+                    Eleicao.getInstance().callEleicao();
+                }
+
                 if(Processos.getInstance().getMe() == Processos.getInstance().getLider()){
                     System.out.println("Servidor indisponível, executando servidor temporário: ");
                 }
 
-                if(!Processos.getInstance().checkServidor()){
-                    Eleicao.getInstance().callEleicao();
-                }
 
                 Processo processoLider = Processos.getInstance().getLider();
 
@@ -43,15 +45,10 @@ public class Gerente extends Tipo {
 
                         int escolha;
 
-                        try {
-                            System.out.print("SUA ESCOLHA: ");
-                            escolha = scanner.nextInt();
-                            scanner.nextLine();
-                        } catch (InputMismatchException e) {
-                            System.out.println("ERRO! VALOR INVALIDO!");
-                            run();
-                            return;
-                        }
+
+                        System.out.print("SUA ESCOLHA: ");
+                        escolha = scanner.nextInt();
+                        scanner.nextLine();
 
                         switch (escolha) {
                             case 1:
@@ -105,6 +102,9 @@ public class Gerente extends Tipo {
                         Logger.getLogger(MultiPrograma.class.getName()).log(Level.SEVERE, "Erro na conexao com " + processoLider.getIdentificador() + ": " + ex.getMessage());
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
+                    } catch (InputMismatchException e){
+                        System.out.println("ERRO! ESCOLHA INVÁLIDA!");
+                        scanner.nextLine();
                     }
             }
             }

@@ -19,12 +19,12 @@ public class Vendedor extends Tipo {
 
             if(!Eleicao.getInstance().isEleicaoIniciada()){
 
-                if(Processos.getInstance().getMe() == Processos.getInstance().getLider()){
-                    System.out.println("Servidor indisponível, executando servidor temporário: ");
+                if(!Processos.getInstance().checkServidor() || Processos.getInstance().getLider() != Processos.getInstance().getProcessoByIdentificador(5)){
+                    Eleicao.getInstance().callEleicao();
                 }
 
-                if(!Processos.getInstance().checkServidor()){
-                    Eleicao.getInstance().callEleicao();
+                if(Processos.getInstance().getMe() == Processos.getInstance().getLider()){
+                    System.out.println("Servidor indisponível, executando servidor temporário: ");
                 }
 
                 Processo processoLider = Processos.getInstance().getLider();
@@ -56,7 +56,7 @@ public class Vendedor extends Tipo {
                             String dataVenda = scanner.nextLine();
 
 
-                            socket.enviar("05|" + quantidade + "|" + nomeProduto + "|" + nomeVendedor + "|" + dataVenda);
+                            socket.enviar("05|" + nomeVendedor + "|" + nomeProduto + "|" + quantidade + "|" + dataVenda);
 
                         } catch (InputMismatchException e) {
                             System.out.println("ERRO! VALOR INVALIDO!");
